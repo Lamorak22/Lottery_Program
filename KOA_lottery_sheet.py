@@ -52,6 +52,8 @@ class KOA_Lottery: #Use master for Tk functions and commands
         self.d={}            
         self.createEntries()
         
+        infoLabel = Label(self.f1, text="Only enter numbers into the entry boxes please!")
+        infoLabel.grid(row=26,column=0,columnspan=2)
         
         ##### Display KOA image in top right
         photo = PhotoImage(file="C:\\Users\\Daniel\\Pictures\\koa-logo.png")
@@ -106,10 +108,6 @@ class KOA_Lottery: #Use master for Tk functions and commands
         label = Label(popup, text=msg, width = 120, height=10, bg="yellow", font=font)
         label.pack()
 
-        # ##### Create exit button
-        # b1 = Button(popup, text="Exit", bg="yellow", width=10, command=popup.destroy)
-        # b1.pack()
-
     def helpWindow(self):
         popup = Tk()
         self.popUpConstructor(popup, 700, 200)
@@ -118,8 +116,7 @@ class KOA_Lottery: #Use master for Tk functions and commands
         font = ("Helvetica", "12", "bold")
         msg = """Q: I already submitted the lottery numbers, but then someone came in
          and bought more. What do I do?\nA: Just re-enter all the numbers again. Unfortunately
-         it is not possible to enter a number for a single lottery and change it.\n
-         Q: """
+         it is not possible to enter a number for a single lottery and change it."""
         label = Label(popup, text=msg, width = 120, height=10, bg="yellow", font=font)
         label.pack()
 
@@ -144,6 +141,9 @@ class KOA_Lottery: #Use master for Tk functions and commands
         ##### Writing to the cells
         for x in range(1,25):
             temp_num = self.d[f'e{x}'].get()
+            print("e1: ", temp_num)
+            if int(temp_num) == None:
+                print("Yea")
             ws.cell(row=row_num, column=col_num, value=int(temp_num))
             col_num += 1
         ##### Save Workbook    
@@ -253,8 +253,6 @@ class KOA_Lottery: #Use master for Tk functions and commands
         else:
             self.lotteryOut()
         wb.save("KOA-Lottery-Excel.xlsx")
-
-
 
 
 root = Tk()
