@@ -2,7 +2,6 @@
 #For GUI
 from tkinter import *
 import webbrowser
-import tkinter.messagebox
 import subprocess
 
 #For Excel
@@ -26,11 +25,11 @@ class KOA_Lottery: #Use master for Tk functions and commands
         # master.geometry('%dx%d+%d+%d' % (w,h,x,y))  
         
 
-        #####
-        f1 = Frame(master)
-        f1.pack(side=LEFT)
-        f2 = Frame(master)
-        f2.pack(side=RIGHT)
+        ##### Create frames
+        self.f1 = Frame(master)
+        self.f1.pack(side=LEFT)
+        self.f2 = Frame(master)
+        self.f2.pack(side=RIGHT)
 
         ##### Get current date and create a string that symbolizes the =DATE formula in Excel
         self.local_time = time.localtime(time.time())
@@ -40,41 +39,53 @@ class KOA_Lottery: #Use master for Tk functions and commands
         menu = Menu(master)
         master.config(menu=menu)
         menu.add_cascade(label='About', command=self.aboutWindow)
+        menu.add_cascade(label='Help/FAQ', command=self.helpWindow)
 
         ##### Initialize inventory
         self.inventory={}
-        self.loadInventory()
+        self.checkInventory()
 
         ##### Make 25 Labels
-        for i in range(1,25):
-           lbltxt = "Lottery #" + str(i) + ":"
-           l1 = Label(f1, text=lbltxt, font="bold")
-           l1.grid(row=i, sticky=W)
+        self.createLabels()
 
-        ##### Make 25 Entries and store in dictionary
+        ##### Make 25 Entries and store in dictionary 
         self.d={}            
-        for x in range(1,25):
-            self.d[f'e{x}'] = Entry(f1, bg="yellow")
-            self.d[f'e{x}'].grid(row=x, column=1)
+        self.createEntries()
         
         
         ##### Display KOA image in top right
         photo = PhotoImage(file="C:\\Users\\Daniel\\Pictures\\koa-logo.png")
-        w = Label(f2, image=photo)
+        w = Label(self.f2, image=photo)
         w.photo = photo
         w.grid(row=0,column=0,sticky=N+E)
 
         ##### Buttons for when a lottery is out of stock or out
-        out_btn = Button(f2, height=2, bg="green", text="Click this button if a lottery is out", font="bold", command=self.lotteryOut)
+        out_btn = Button(self.f2, height=2, bg="green", text="Click this button if a lottery is out", font="bold", command=self.lotteryOut)
         out_btn.grid(row=1,column=0,columnspan=2,sticky=W+E+N+S)
-        stock_btn = Button(f2, height=2, bg="Green", text="Click this button to restock a lottery", font="bold", command=self.restockPopup)
+        stock_btn = Button(self.f2, height=2, bg="Green", text="Click this button to restock a lottery", font="bold", command=self.restockPopup)
         stock_btn.grid(row=2,column=0,columnspan=2,sticky=W+E+N+S)
 
         ##### Assigning function to buttons  
-        submitButton = Button(f2, text="Submit", bg="yellow", height=2, font="bold", command=lambda:[self.export_to_excel(), self.update_amt_sold(), master.quit()])
+        submitButton = Button(self.f2, text="Submit", bg="yellow", height=2, font="bold", command=lambda:[self.export_to_excel(), self.update_amt_sold(), master.quit()])
         submitButton.grid(row=3,column=0,columnspan=2,sticky=W+E+N+S) 
-        quitButton = Button(f2, text="Quit", bg="red", height=2, font="bold", command=master.quit)
+        quitButton = Button(self.f2, text="Quit", bg="red", height=2, font="bold", command=master.quit)
         quitButton.grid(row=4,column=0,columnspan=2,sticky=W+E+N+S)
+      
+    def createLabels(self):
+        for i in range(1,25):
+           lbltxt = "Lottery #" + str(i) + ":"
+           l1 = Label(self.f1, text=lbltxt, font="bold")
+           l1.grid(row=i, sticky=W)
+
+    def createEntries(self):
+        wb = load_workbook("KOA-Lottery-Excel.xlsx")
+        ws = wb["Inventory"]
+        for x in range(1,25):
+            self.d[f'e{x}'] = Entry(self.f1, bg="yellow")
+            self.d[f'e{x}'].grid(row=x, column=1)
+            if ws.cell(row=x, column=3).value == "out":
+                self.d[f'e{x}'].config(state='disabled')
+        wb.save("KOA-Lottery-Excel.xlsx")
 
     def popUpConstructor(self, popup, w, h):
         ##### Display the new window in the middle of the screen with the appropriate dimensions
@@ -95,10 +106,22 @@ class KOA_Lottery: #Use master for Tk functions and commands
         label = Label(popup, text=msg, width = 120, height=10, bg="yellow", font=font)
         label.pack()
 
-        ##### Create exit button
-        b1 = Button(popup, text="Exit", bg="yellow", width=10, command=popup.destroy)
-        b1.pack()
-        popup.mainloop()
+        # ##### Create exit button
+        # b1 = Button(popup, text="Exit", bg="yellow", width=10, command=popup.destroy)
+        # b1.pack()
+
+    def helpWindow(self):
+        popup = Tk()
+        self.popUpConstructor(popup, 700, 200)
+        popup.title("Help/FAQ")
+
+        font = ("Helvetica", "12", "bold")
+        msg = """Q: I already submitted the lottery numbers, but then someone came in
+         and bought more. What do I do?\nA: Just re-enter all the numbers again. Unfortunately
+         it is not possible to enter a number for a single lottery and change it.\n
+         Q: """
+        label = Label(popup, text=msg, width = 120, height=10, bg="yellow", font=font)
+        label.pack()
 
     def export_to_excel(self):
         ##### Initialize variables
@@ -162,23 +185,20 @@ class KOA_Lottery: #Use master for Tk functions and commands
         ##### Save Workbook
         wb.save("KOA-Lottery-Excel.xlsx")
 
-    def loadInventory(self):
-        row_num = 2
+    def checkInventory(self):
+        row_num = 1
         wb = load_workbook("KOA-Lottery-Excel.xlsx")
         ws = wb["Inventory"] 
         ##### Load inventory
         for x in range(1,25):
-            self.inventory[f'inv{x}'] = ws.cell(row=row_num, column=2).value
+            self.inventory[f'inv{x}'] = ws.cell(row=row_num, column=3).value
             row_num += 1
         wb.save("KOA-Lottery-Excel.xlsx")
 
     def restockPopup(self):
         popup = Tk()
-        self.popUpConstructor(popup, 400, 275)
+        self.popUpConstructor(popup, 260, 75)
         popup.title("Restock")
-        msg = "Please click the Lottery that needs to be restocked."
-        label1 = Label(popup, text=msg)
-        label1.grid(row=0,column=0,columnspan=3) 
 
         label2 = Label(popup, text="Lottery # to restock (1-24): ")
         label2.grid(row=1,column=0, sticky=W)
@@ -200,13 +220,16 @@ class KOA_Lottery: #Use master for Tk functions and commands
         new_inventory_value = self.restock_amt.get()
         if int(lottery_num) <= 24 and int(lottery_num) >= 1:
             ws.cell(row=int(lottery_num), column=2, value=int(new_inventory_value))
+            ws.cell(row=int(lottery_num), column=3, value="in")
+            self.d[f'e{int(lottery_num)}'].config(state='normal')
+
         else:
             self.restockPopup()
         wb.save("KOA-Lottery-Excel.xlsx")
 
     def lotteryOut(self):
         popup = Tk()
-        self.popUpConstructor(popup, 400, 275)
+        self.popUpConstructor(popup, 260, 75)
         popup.title("Restock")
         msg = "Please indicate which lottery # is out."
         label1 = Label(popup, text=msg)
@@ -214,8 +237,23 @@ class KOA_Lottery: #Use master for Tk functions and commands
 
         label2 = Label(popup, text="Lottery # that is out (1-24): ")
         label2.grid(row=1,column=0, sticky=W)
-        self.restock_num = Entry(popup, width=5)
-        self.restock_num.grid(row=1, column=1)
+        self.inout_bool = Entry(popup, width=5)
+        self.inout_bool.grid(row=1, column=1)
+
+        btn_1 = Button(popup, text="Submit", command=lambda:[self.assignOut(), popup.destroy()])
+        btn_1.grid(row=3, rowspan=2, column=0, columnspan=3)
+
+    def assignOut(self):
+        wb = load_workbook("KOA-Lottery-Excel.xlsx")
+        ws = wb["Inventory"]
+        lottout = self.inout_bool.get()
+        if int(lottout) <= 24 and int(lottout) >= 1:
+            ws.cell(row=int(lottout), column=3, value="out")
+            self.d[f'e{int(lottout)}'].config(state='disabled')
+        else:
+            self.lotteryOut()
+        wb.save("KOA-Lottery-Excel.xlsx")
+
 
 
 
