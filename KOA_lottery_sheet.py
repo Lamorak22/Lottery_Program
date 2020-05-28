@@ -35,7 +35,6 @@ class KOA_Lottery: #Use master for Tk functions and commands
         ##### Get current date and create a string that symbolizes the =DATE formula in Excel
         self.local_time = time.localtime(time.time())
         self.curr_time =  str(self.local_time[1]) + "/" + str(self.local_time[2]) + "/" + str(self.local_time[0]) 
-        print(self.curr_time)
 
         ##### Making the file menu at the top of the application
         menu = Menu(master)
@@ -66,7 +65,7 @@ class KOA_Lottery: #Use master for Tk functions and commands
         w.grid(row=0,column=0,sticky=N+E)
 
         ##### Buttons for when a lottery is out of stock or out
-        out_btn = Button(f2, height=2, bg="green", text="Click this button if a lottery is out", font="bold")
+        out_btn = Button(f2, height=2, bg="green", text="Click this button if a lottery is out", font="bold", command=self.lotteryOut)
         out_btn.grid(row=1,column=0,columnspan=2,sticky=W+E+N+S)
         stock_btn = Button(f2, height=2, bg="Green", text="Click this button to restock a lottery", font="bold", command=self.restockPopup)
         stock_btn.grid(row=2,column=0,columnspan=2,sticky=W+E+N+S)
@@ -167,6 +166,7 @@ class KOA_Lottery: #Use master for Tk functions and commands
         row_num = 2
         wb = load_workbook("KOA-Lottery-Excel.xlsx")
         ws = wb["Inventory"] 
+        ##### Load inventory
         for x in range(1,25):
             self.inventory[f'inv{x}'] = ws.cell(row=row_num, column=2).value
             row_num += 1
@@ -200,6 +200,8 @@ class KOA_Lottery: #Use master for Tk functions and commands
         new_inventory_value = self.restock_amt.get()
         if int(lottery_num) <= 24 and int(lottery_num) >= 1:
             ws.cell(row=int(lottery_num), column=2, value=int(new_inventory_value))
+        else:
+            self.restockPopup()
         wb.save("KOA-Lottery-Excel.xlsx")
 
     def lotteryOut(self):
@@ -214,6 +216,8 @@ class KOA_Lottery: #Use master for Tk functions and commands
         label2.grid(row=1,column=0, sticky=W)
         self.restock_num = Entry(popup, width=5)
         self.restock_num.grid(row=1, column=1)
+
+
 
 root = Tk()
 mygui = KOA_Lottery(root)
