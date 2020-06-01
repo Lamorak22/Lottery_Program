@@ -1,8 +1,9 @@
 #KOA lottery sheet
+#Daniel Eberhart
+#5/31/2020
 #For GUI
 from tkinter import *
 import webbrowser
-import subprocess
 
 #For Excel
 from openpyxl import Workbook, load_workbook
@@ -129,6 +130,7 @@ class KOA_Lottery: #Use master for Tk functions and commands
         ##### Load workbook and open selected sheet from said workbook
         wb = load_workbook("KOA-Lottery-Excel.xlsx")
         ws = wb["Data"]
+        ws2 = wb["Inventory"]
 
         ##### Get date
         while date_found == False:
@@ -141,10 +143,13 @@ class KOA_Lottery: #Use master for Tk functions and commands
         ##### Writing to the cells
         for x in range(1,25):
             temp_num = self.d[f'e{x}'].get()
-            print("e1: ", temp_num)
-            if int(temp_num) == None:
-                print("Yea")
-            ws.cell(row=row_num, column=col_num, value=int(temp_num))
+            entry_state = self.d[f'e{x}'].cget('state')
+            if entry_state == "normal":
+                ws.cell(row=row_num, column=col_num, value=int(temp_num))
+            else:
+                inv_num = ws2.cell(row=x, column=2).value
+                ws.cell(row=row_num, column=col_num, value=inv_num)
+            
             col_num += 1
         ##### Save Workbook    
         wb.save("KOA-Lottery-Excel.xlsx")
