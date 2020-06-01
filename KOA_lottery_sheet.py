@@ -16,16 +16,6 @@ class KOA_Lottery: #Use master for Tk functions and commands
         self.master = master
         master.title('KOA Lottery Sheet')
 
-        ##### Display the GUI in the middle of the screen with the appropriate dimensions
-        # w = 1000
-        # h = 700
-        # sw = master.winfo_screenwidth()
-        # sh = master.winfo_screenheight()
-        # x = (sw - w)/2
-        # y = (sh - h)/2
-        # master.geometry('%dx%d+%d+%d' % (w,h,x,y))  
-        
-
         ##### Create frames
         self.f1 = Frame(master)
         self.f1.pack(side=LEFT)
@@ -169,7 +159,6 @@ class KOA_Lottery: #Use master for Tk functions and commands
         ##### Get date
         while date_found == False:
             if ws1.cell(row=row_num, column=1).value == str(self.curr_time):
-                #print("Date Successfully found at row " + str(row_num))
                 date_found = True
             else:
                 row_num += 1
@@ -180,6 +169,10 @@ class KOA_Lottery: #Use master for Tk functions and commands
             minuend = ws2.cell(row=row_num, column=col_num).value
             subtrahend = ws2.cell(row=row_num-1, column=col_num).value
             difference = int(minuend) - int(subtrahend)
+
+            if difference < 0:
+                difference = ws2.cell(row=row_num, column=col_num).value
+
             total_sold += difference
             ws1.cell(row=row_num, column=col_num, value=int(difference))
             col_num += 1
