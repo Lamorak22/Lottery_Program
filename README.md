@@ -1,4 +1,5 @@
 Lottery_Program
+
 I created this program for a minimum wage job I worked.
 Every day we would have to inventory the lottery. 
 We originally did it on paper, but that took too long and was inefficient.
