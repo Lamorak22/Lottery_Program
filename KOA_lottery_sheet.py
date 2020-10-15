@@ -1,7 +1,7 @@
-#KOA lottery sheet
+#Lottery sheet
 #Daniel Eberhart
 #5/31/2020
-#For GUI
+
 from tkinter import *
 import webbrowser
 
@@ -11,10 +11,10 @@ from openpyxl import Workbook, load_workbook
 #For obtaining current time
 import time
 
-class KOA_Lottery: #Use master for Tk functions and commands
+class Lottery: #Use master for Tk functions and commands
     def __init__(self, master):
         self.master = master
-        master.title('KOA Lottery Sheet')
+        master.title('Lottery Sheet')
 
         ##### Create frames
         self.f1 = Frame(master)
@@ -46,8 +46,8 @@ class KOA_Lottery: #Use master for Tk functions and commands
         infoLabel = Label(self.f1, text="Only enter numbers into the entry boxes please!")
         infoLabel.grid(row=26,column=0,columnspan=2)
         
-        ##### Display KOA image in top right
-        photo = PhotoImage(file="C:\\Users\\Daniel\\Pictures\\koa-logo.png")
+        ##### Display image in top right
+        photo = PhotoImage(file="oregon-lottery-logo.png")
         w = Label(self.f2, image=photo)
         w.photo = photo
         w.grid(row=0,column=0,sticky=N+E)
@@ -71,14 +71,14 @@ class KOA_Lottery: #Use master for Tk functions and commands
            l1.grid(row=i, sticky=W)
 
     def createEntries(self):
-        wb = load_workbook("KOA-Lottery-Excel.xlsx")
+        wb = load_workbook("Lottery-Excel.xlsx")
         ws = wb["Inventory"]
         for x in range(1,25):
             self.d[f'e{x}'] = Entry(self.f1, bg="yellow")
             self.d[f'e{x}'].grid(row=x, column=1)
             if ws.cell(row=x, column=3).value == "out":
                 self.d[f'e{x}'].config(state='disabled')
-        wb.save("KOA-Lottery-Excel.xlsx")
+        wb.save("Lottery-Excel.xlsx")
 
     def popUpConstructor(self, popup, w, h):
         ##### Display the new window in the middle of the screen with the appropriate dimensions
@@ -118,7 +118,7 @@ class KOA_Lottery: #Use master for Tk functions and commands
         date_found = False
 
         ##### Load workbook and open selected sheet from said workbook
-        wb = load_workbook("KOA-Lottery-Excel.xlsx")
+        wb = load_workbook("Lottery-Excel.xlsx")
         ws = wb["Data"]
         ws2 = wb["Inventory"]
 
@@ -142,7 +142,7 @@ class KOA_Lottery: #Use master for Tk functions and commands
             
             col_num += 1
         ##### Save Workbook    
-        wb.save("KOA-Lottery-Excel.xlsx")
+        wb.save("Lottery-Excel.xlsx")
 
     def update_amt_sold(self):
         ##### Initialize variables
@@ -151,7 +151,7 @@ class KOA_Lottery: #Use master for Tk functions and commands
         date_found = False
 
         ##### Load workbook and open selected sheets from said workbook
-        wb = load_workbook("KOA-Lottery-Excel.xlsx")
+        wb = load_workbook("Lottery-Excel.xlsx")
         ws1 = wb["Sold"]
         ws2 = wb["Data"]
         
@@ -181,17 +181,17 @@ class KOA_Lottery: #Use master for Tk functions and commands
         ws1.cell(row=row_num, column=col_num, value=int(total_sold))
 
         ##### Save Workbook
-        wb.save("KOA-Lottery-Excel.xlsx")
+        wb.save("Lottery-Excel.xlsx")
 
     def checkInventory(self):
         row_num = 1
-        wb = load_workbook("KOA-Lottery-Excel.xlsx")
+        wb = load_workbook("Lottery-Excel.xlsx")
         ws = wb["Inventory"] 
         ##### Load inventory
         for x in range(1,25):
             self.inventory[f'inv{x}'] = ws.cell(row=row_num, column=3).value
             row_num += 1
-        wb.save("KOA-Lottery-Excel.xlsx")
+        wb.save("Lottery-Excel.xlsx")
 
     def restockPopup(self):
         popup = Tk()
@@ -212,7 +212,7 @@ class KOA_Lottery: #Use master for Tk functions and commands
         btn_1.grid(row=3, rowspan=2, column=0, columnspan=3)
 
     def restockInventory(self):
-        wb = load_workbook("KOA-Lottery-Excel.xlsx")
+        wb = load_workbook("Lottery-Excel.xlsx")
         ws = wb["Inventory"]
         lottery_num = self.restock_num.get()
         new_inventory_value = self.restock_amt.get()
@@ -223,7 +223,7 @@ class KOA_Lottery: #Use master for Tk functions and commands
 
         else:
             self.restockPopup()
-        wb.save("KOA-Lottery-Excel.xlsx")
+        wb.save("Lottery-Excel.xlsx")
 
     def lotteryOut(self):
         popup = Tk()
@@ -242,7 +242,7 @@ class KOA_Lottery: #Use master for Tk functions and commands
         btn_1.grid(row=3, rowspan=2, column=0, columnspan=3)
 
     def assignOut(self):
-        wb = load_workbook("KOA-Lottery-Excel.xlsx")
+        wb = load_workbook("Lottery-Excel.xlsx")
         ws = wb["Inventory"]
         lottout = self.inout_bool.get()
         if int(lottout) <= 24 and int(lottout) >= 1:
@@ -250,9 +250,9 @@ class KOA_Lottery: #Use master for Tk functions and commands
             self.d[f'e{int(lottout)}'].config(state='disabled')
         else:
             self.lotteryOut()
-        wb.save("KOA-Lottery-Excel.xlsx")
+        wb.save("Lottery-Excel.xlsx")
 
 
 root = Tk()
-mygui = KOA_Lottery(root)
+mygui = Lottery(root)
 root.mainloop()
