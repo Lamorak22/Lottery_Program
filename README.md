@@ -1,8 +1,9 @@
-Lottery_Program
+# Lottery_Program
 
 I created this program for a minimum wage job I worked.
 Every day we would have to inventory the lottery. 
 We originally did it on paper, but that took too long and was inefficient.
+We did this to see how many of each ticket were sold per day, but the data was never actually saved.
 I eventually created an excel file for it and added some buttons to it for easier use.
 This was a step in the right direction, but the excel file was cleared every few weeks so no valuable selling data was collected.
 That is what made me decide to make this program.
